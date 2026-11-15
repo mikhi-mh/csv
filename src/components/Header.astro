@@ -1,0 +1,124 @@
+---
+import { Image } from 'astro:assets';
+import emblem from '@/assets/emblem.png';
+import Icon from '@/components/Icon.astro';
+import MusicButton from '@/components/MusicButton.astro';
+import { type Lang, localePath, t, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  path: string;
+}
+const { lang, path } = Astro.props;
+const otherLang: Lang = lang === 'en' ? 'mr' : 'en';
+
+const nav = [
+  { href: '/', label: ui.navHome },
+  { href: '/subjects/', label: ui.navSubjects },
+  { href: '/videos/', label: ui.navVideos },
+  { href: '/gallery/', label: ui.navGallery },
+  { href: '/contact/', label: ui.navContact },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-sand-deep/70 bg-ivory/90 backdrop-blur-md">
+  <div class="container-page flex h-16 items-center gap-3 sm:h-20">
+    <a href={localePath(lang, '/')} class="flex min-w-0 items-center gap-2.5 sm:gap-3">
+      <Image src={emblem} alt="" width={56} height={56} class="size-11 shrink-0 sm:size-14" loading="eager" />
+      <span class="min-w-0 leading-tight">
+        <span class="block truncate font-display text-lg text-maroon-700 sm:text-2xl">चैतन्य संगीत विद्यालय</span>
+        <span class="block truncate text-xs tracking-wide text-muted sm:text-sm">
+          {lang === 'mr' ? t(ui.places, lang) : `Chaitanya Sangeet Vidyalay · ${t(ui.places, lang)}`}
+        </span>
+      </span>
+    </a>
+
+    <!-- Desktop navigation -->
+    <nav class="ml-auto hidden lg:block" aria-label={lang === 'mr' ? 'मुख्य मेनू' : 'Main'}>
+      <ul class="flex items-center gap-1">
+        {
+          nav.map((item) => {
+            const active = item.href === path;
+            return (
+              <li>
+                <a
+                  href={localePath(lang, item.href)}
+                  aria-current={active ? 'page' : undefined}
+                  class:list={[
+                    'rounded-full px-3.5 py-2 font-medium transition-colors',
+                    active ? 'bg-maroon-700 text-gold-100' : 'text-ink hover:bg-sand hover:text-maroon-700',
+                  ]}
+                >
+                  {t(item.label, lang)}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2 lg:ml-2">
+      <a
+        href={localePath(otherLang, path)}
+        hreflang={otherLang}
+        lang={otherLang}
+        class="hidden items-center gap-1.5 rounded-full border border-peacock-700/40 px-3 py-1.5 text-sm font-semibold text-peacock-700 transition-colors hover:bg-peacock-100 sm:inline-flex"
+      >
+        <Icon name="language" class="size-4" />
+        {t(ui.switchLang, lang)}
+      </a>
+
+      <MusicButton lang={lang} />
+
+      <!-- Mobile navigation -->
+      <details class="group lg:hidden" data-mobile-menu>
+        <summary
+          class="flex size-11 cursor-pointer list-none items-center justify-center rounded-full text-maroon-700 hover:bg-sand [&::-webkit-details-marker]:hidden"
+          aria-label={t(ui.menu, lang)}
+        >
+          <Icon name="menu" class="size-6 group-open:hidden" />
+          <Icon name="close" class="hidden size-6 group-open:block" />
+        </summary>
+        <nav
+          class="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto border-b border-sand-deep bg-paper shadow-xl"
+          aria-label={lang === 'mr' ? 'मुख्य मेनू' : 'Main'}
+        >
+          <ul class="container-page flex flex-col py-3">
+            {
+              nav.map((item) => {
+                const active = item.href === path;
+                return (
+                  <li>
+                    <a
+                      href={localePath(lang, item.href)}
+                      aria-current={active ? 'page' : undefined}
+                      class:list={[
+                        'flex items-center justify-between rounded-xl px-4 py-3 text-lg font-medium',
+                        active ? 'bg-maroon-700 text-gold-100' : 'text-ink hover:bg-sand',
+                      ]}
+                    >
+                      {t(item.label, lang)}
+                      <Icon name="chevronRight" class="size-5 opacity-50" />
+                    </a>
+                  </li>
+                );
+              })
+            }
+            <li class="mt-2 border-t border-sand-deep pt-3">
+              <a
+                href={localePath(otherLang, path)}
+                hreflang={otherLang}
+                lang={otherLang}
+                class="flex items-center gap-2 rounded-xl px-4 py-3 text-lg font-semibold text-peacock-700 hover:bg-peacock-100"
+              >
+                <Icon name="language" class="size-5" />
+                {t(ui.switchLang, lang)}
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

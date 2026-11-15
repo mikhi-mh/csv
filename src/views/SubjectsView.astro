@@ -1,0 +1,116 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageBanner from '@/components/PageBanner.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import CourseGrid from '@/components/CourseGrid.astro';
+import Icon from '@/components/Icon.astro';
+import Mandala from '@/components/Mandala.astro';
+import poster from '@/assets/admission-poster.png';
+import { instrumentImages } from '@/assets/instruments';
+import { achievements } from '@/data/subjects';
+import { faculty, downloads } from '@/data/school';
+import { type Lang, t, tl, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const title = t(ui.navSubjects, lang);
+const description =
+  lang === 'mr'
+    ? 'चैतन्य संगीत विद्यालयातील विषय — गायन, तबला, सतार, हार्मोनियम, कीबोर्ड, मृदंग / पखवाज, गिटार, व्हायोलिन, कथ्थक, बासरी — आणि विद्यार्थ्यांची कामगिरी.'
+    : 'Subjects taught at Chaitanya Sangeet Vidyalay — vocal, tabla, sitar, harmonium, keyboard, mrudung / pakhawaj, guitar, violin, kathak, flute — and student achievements.';
+---
+
+<BaseLayout lang={lang} path="/subjects/" title={title} description={description}>
+  <PageBanner title={title} />
+
+  <section class="container-page py-16" aria-labelledby="courses-heading">
+    <SectionHeading id="courses-heading" title={t(ui.coursesHeading, lang)} />
+    <CourseGrid lang={lang} />
+  </section>
+
+  <section class="container-page pb-8" aria-labelledby="achievements-heading">
+    <SectionHeading id="achievements-heading" title={t(ui.achievementsHeading, lang)} />
+    <div class="space-y-6">
+      {
+        achievements.map((a, i) => (
+          <article
+            class:list={[
+              'card card-frieze grid items-center gap-6 overflow-hidden p-6 sm:p-8 lg:gap-10',
+              i % 2 === 0 ? 'sm:grid-cols-[10rem_1fr]' : 'sm:grid-cols-[1fr_10rem]',
+            ]}
+          >
+            <div class:list={['relative mx-auto size-36 sm:size-40', i % 2 === 1 && 'sm:order-last']}>
+              <Mandala class="absolute -inset-4 size-[calc(100%+2rem)] text-gold-500/30" />
+              <Image
+                src={instrumentImages[a.image]}
+                alt={t(a.title, lang)}
+                width={320}
+                height={320}
+                class="relative size-full rounded-full bg-white object-contain p-2 shadow-md ring-2 ring-gold-300"
+              />
+            </div>
+            <div>
+              <h3 class="font-serif text-2xl text-maroon-700 sm:text-3xl">{t(a.title, lang)}</h3>
+              <ul class="list-ornament mt-4 space-y-2.5">
+                {tl(a.items, lang).map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container-page py-12">
+    <div class="grid gap-6 md:grid-cols-3">
+      <div class="card p-6 sm:p-8">
+        <div class="flex items-center gap-3">
+          <span class="flex size-11 items-center justify-center rounded-full bg-maroon-100 text-maroon-700"><Icon name="user" class="size-6" /></span>
+          <h2 class="font-serif text-2xl text-maroon-700">{t(ui.facultyHeading, lang)}</h2>
+        </div>
+        <ul class="mt-5 space-y-4">
+          {
+            faculty.map((f) => (
+              <li>
+                <p class="text-lg font-medium">{t(f.name, lang)}</p>
+                <p class="text-peacock-700">{t(f.title, lang)}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="card p-6 sm:p-8">
+        <div class="flex items-center gap-3">
+          <span class="flex size-11 items-center justify-center rounded-full bg-peacock-100 text-peacock-700"><Icon name="file" class="size-6" /></span>
+          <h2 class="font-serif text-2xl text-maroon-700">{t(ui.admission, lang)}</h2>
+        </div>
+        <div class="mt-5 flex flex-col items-start gap-3">
+          <a href={poster.src} target="_blank" rel="noopener" class="link inline-flex items-center gap-2">
+            <Icon name="arrowRight" class="size-4" />{t(ui.brochure, lang)}
+          </a>
+          <a href={downloads.applicationForm} target="_blank" rel="noopener" class="link inline-flex items-center gap-2">
+            <Icon name="download" class="size-4" />{t(ui.applicationForm, lang)}
+          </a>
+        </div>
+      </div>
+
+      <div class="card p-6 sm:p-8">
+        <div class="flex items-center gap-3">
+          <span class="flex size-11 items-center justify-center rounded-full bg-gold-100 text-gold-600"><Icon name="award" class="size-6" /></span>
+          <h2 class="font-serif text-2xl text-maroon-700">{t(ui.careerHeading, lang)}</h2>
+        </div>
+        <div class="mt-5">
+          <a href={downloads.careerOpportunities} target="_blank" rel="noopener" class="link inline-flex items-center gap-2">
+            <Icon name="download" class="size-4" />{t(ui.careerLink, lang)}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

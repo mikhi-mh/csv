@@ -1,0 +1,51 @@
+---
+import Icon from '@/components/Icon.astro';
+import type { Office, Person } from '@/data/school';
+import { type Lang, num, t, tl, ui, type T } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  heading: T;
+  office: Office;
+  people?: Person[];
+}
+const { lang, heading, office, people = [] } = Astro.props;
+---
+
+<article class="card card-frieze flex h-full flex-col p-6 sm:p-8">
+  <div class="flex items-center gap-3">
+    <span class="flex size-11 items-center justify-center rounded-full bg-peacock-100 text-peacock-700">
+      <Icon name="pin" class="size-6" />
+    </span>
+    <h3 class="font-serif text-2xl text-maroon-700">{t(heading, lang)}</h3>
+  </div>
+
+  <address class="mt-5 text-ink/90 not-italic">
+    {tl(office.address, lang).map((line) => <span class="block">{line}</span>)}
+  </address>
+
+  {
+    people.length > 0 && (
+      <div class="mt-6 border-t border-sand-deep pt-5">
+        <p class="mb-3 text-sm font-semibold tracking-wider text-muted uppercase">{t(ui.contactPeople, lang)}</p>
+        <ul class="space-y-2">
+          {people.map((p) => (
+            <li>
+              <a href={`tel:+91${p.phone}`} class="group flex flex-wrap items-baseline justify-between gap-x-3 rounded-lg py-1 hover:text-maroon-700">
+                <span>{t(p.name, lang)}</span>
+                <span class="font-semibold text-peacock-700 tabular-nums group-hover:underline">{num(p.phone, lang)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  <div class="mt-auto pt-6">
+    <a href={office.mapUrl} target="_blank" rel="noopener" class="btn btn-outline">
+      <Icon name="pin" class="size-5" />
+      {t(ui.viewOnMaps, lang)}
+    </a>
+  </div>
+</article>

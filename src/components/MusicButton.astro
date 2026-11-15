@@ -1,0 +1,29 @@
+---
+/** Play / pause button for the background music (see MusicPlayer.astro). Never autoplays. */
+import Icon from '@/components/Icon.astro';
+import { type Lang, t, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const playLabel = t(ui.musicPlay, lang);
+const pauseLabel = t(ui.musicPause, lang);
+---
+
+<button
+  type="button"
+  data-music-toggle
+  data-label-play={playLabel}
+  data-label-pause={pauseLabel}
+  aria-pressed="false"
+  aria-label={playLabel}
+  title={playLabel}
+  class="group/music relative flex size-11 items-center justify-center rounded-full bg-sand text-maroon-700 transition-colors hover:bg-sand-deep aria-pressed:bg-peacock-700 aria-pressed:text-white"
+>
+  <Icon name="music" class="size-5 group-aria-pressed/music:hidden" />
+  <Icon name="pause" class="hidden size-5 group-aria-pressed/music:block" />
+  <span
+    class="pointer-events-none absolute inset-0 hidden rounded-full ring-2 ring-peacock-600/50 group-aria-pressed/music:block group-aria-pressed/music:animate-ping"
+    aria-hidden="true"></span>
+</button>

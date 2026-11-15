@@ -1,0 +1,144 @@
+---
+/**
+ * Photo gallery. Every image in  src/assets/gallery/  appears here automatically
+ * (sorted by file name). To add a photo, just drop the file into that folder.
+ */
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageBanner from '@/components/PageBanner.astro';
+import Icon from '@/components/Icon.astro';
+import { type Lang, num, t, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const title = t(ui.galleryHeading, lang);
+const description =
+  lang === 'mr' ? 'चैतन्य संगीत विद्यालयाच्या कार्यक्रमांचे फोटो.' : 'Photos from Chaitanya Sangeet Vidyalay programmes and events.';
+
+const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/gallery/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+
+const photos = await Promise.all(
+  Object.keys(files)
+    .sort()
+    .map(async (path, i) => {
+      const src = files[path].default;
+      const full = await getImage({ src, width: Math.min(1800, src.width), format: 'webp' });
+      return { src, full: full.src, alt: `${t(ui.photo, lang)} ${num(i + 1, lang)}` };
+    }),
+);
+---
+
+<BaseLayout lang={lang} path="/gallery/" title={title} description={description}>
+  <PageBanner title={title} />
+
+  <section class="container-page py-16">
+    <ul class="columns-1 gap-5 min-[480px]:columns-2 lg:columns-3" data-gallery>
+      {
+        photos.map((p, i) => (
+          <li class="mb-5 break-inside-avoid">
+            <button
+              type="button"
+              class="group block w-full cursor-zoom-in overflow-hidden rounded-2xl bg-sand p-1.5 shadow-md ring-1 ring-sand-deep transition hover:shadow-xl"
+              data-index={i}
+              data-full={p.full}
+              aria-label={p.alt}
+            >
+              <Image
+                src={p.src}
+                alt={p.alt}
+                widths={[400, 700]}
+                sizes="(min-width: 1024px) 360px, (min-width: 480px) 45vw, 92vw"
+                class="w-full rounded-xl transition duration-500 group-hover:scale-[1.02]"
+              />
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- Lightbox -->
+  <dialog
+    data-lightbox
+    class="m-auto size-full max-h-none max-w-none bg-transparent p-0 backdrop:bg-maroon-950/90 backdrop:backdrop-blur-sm"
+    aria-label={title}
+  >
+    <div class="relative flex size-full items-center justify-center p-4 sm:p-12">
+      <img data-lightbox-img alt="" class="max-h-full max-w-full rounded-lg object-contain shadow-2xl" />
+      <p data-lightbox-count class="absolute top-4 left-1/2 -translate-x-1/2 rounded-full bg-black/40 px-3 py-1 text-sm text-white"></p>
+      <button
+        type="button"
+        data-lightbox-close
+        class="absolute top-3 right-3 flex size-12 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+        aria-label={t(ui.close, lang)}
+      >
+        <Icon name="close" class="size-6" />
+      </button>
+      <button
+        type="button"
+        data-lightbox-prev
+        class="absolute top-1/2 left-2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 sm:left-4"
+        aria-label={t(ui.previous, lang)}
+      >
+        <Icon name="chevronLeft" class="size-7" />
+      </button>
+      <button
+        type="button"
+        data-lightbox-next
+        class="absolute top-1/2 right-2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 sm:right-4"
+        aria-label={t(ui.next, lang)}
+      >
+        <Icon name="chevronRight" class="size-7" />
+      </button>
+    </div>
+  </dialog>
+</BaseLayout>
+
+<script>
+  function setup() {
+    const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+    const grid = document.querySelector('[data-gallery]');
+    if (!dialog || !grid) return;
+
+    const items = Array.from(grid.querySelectorAll<HTMLButtonElement>('button[data-full]'));
+    const img = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    const count = dialog.querySelector<HTMLElement>('[data-lightbox-count]')!;
+    let index = 0;
+
+    const show = (i: number) => {
+      index = (i + items.length) % items.length;
+      const btn = items[index];
+      img.src = btn.dataset.full!;
+      img.alt = btn.getAttribute('aria-label') ?? '';
+      count.textContent = `${index + 1} / ${items.length}`;
+    };
+
+    items.forEach((btn, i) =>
+      btn.addEventListener('click', () => {
+        show(i);
+        dialog.showModal();
+      }),
+    );
+    dialog.querySelector('[data-lightbox-close]')!.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-lightbox-prev]')!.addEventListener('click', () => show(index - 1));
+    dialog.querySelector('[data-lightbox-next]')!.addEventListener('click', () => show(index + 1));
+    // Click on the dark background closes
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog || (e.target as HTMLElement).matches('div.relative')) dialog.close();
+    });
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+    // Swipe on phones
+    let startX = 0;
+    dialog.addEventListener('touchstart', (e) => (startX = e.touches[0].clientX), { passive: true });
+    dialog.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
+    });
+  }
+  document.addEventListener('astro:page-load', setup);
+</script>

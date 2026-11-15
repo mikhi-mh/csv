@@ -1,0 +1,108 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageBanner from '@/components/PageBanner.astro';
+import OfficeCard from '@/components/OfficeCard.astro';
+import Icon, { type IconName } from '@/components/Icon.astro';
+import { contact, mainOffice, branchOffice, people } from '@/data/school';
+import { type Lang, num, t, ui, type T } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const title = t(ui.navContact, lang);
+const description =
+  lang === 'mr'
+    ? 'चैतन्य संगीत विद्यालय संपर्क — सांगोला व मंगळवेढा पत्ता, मोबाइल +91-9822970551, ई-मेल csvidyalay@gmail.com, व्हॉट्सॲप, इंस्टाग्राम, यूट्यूब.'
+    : 'Contact Chaitanya Sangeet Vidyalay — Sangola and Mangalwedha addresses, mobile +91-9822970551, email csvidyalay@gmail.com, WhatsApp, Instagram, YouTube.';
+
+const phones = contact.mobiles.map((m) => ({ value: `+91-${num(m, lang)}`, href: `tel:+91${m}` }));
+
+const methods: { icon: IconName; label: T; value: string; href: string; color: string; external?: boolean }[] = [
+  {
+    icon: 'whatsapp',
+    label: ui.whatsapp,
+    value: `${t(ui.whatsappChat, lang)}: ${num(contact.mobile, lang)}`,
+    href: `https://wa.me/${contact.whatsapp}`,
+    color: 'bg-[#e3f7ea] text-[#128c4a]',
+    external: true,
+  },
+  { icon: 'mail', label: ui.email, value: contact.email, href: `mailto:${contact.email}`, color: 'bg-gold-100 text-gold-600' },
+  {
+    icon: 'instagram',
+    label: ui.instagram,
+    value: contact.instagram.handle,
+    href: contact.instagram.url,
+    color: 'bg-[#fbe6f0] text-[#b02164]',
+    external: true,
+  },
+  {
+    icon: 'youtube',
+    label: ui.youtube,
+    value: contact.youtube.handle,
+    href: contact.youtube.url,
+    color: 'bg-[#fde4e4] text-[#cc0000]',
+    external: true,
+  },
+  {
+    icon: 'globe',
+    label: ui.website,
+    value: 'www.chaitanyasangeetvidyalay.com',
+    href: contact.website,
+    color: 'bg-peacock-100 text-peacock-700',
+  },
+];
+---
+
+<BaseLayout lang={lang} path="/contact/" title={title} description={description}>
+  <PageBanner title={t(ui.contactHeading, lang)} />
+
+  <section class="container-page py-16">
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <li>
+        <div class="card flex h-full items-center gap-4 p-5">
+          <span class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-maroon-100 text-maroon-700">
+            <Icon name="phone" class="size-7" />
+          </span>
+          <span class="min-w-0">
+            <span class="block text-sm text-muted">{t(ui.mobile, lang)}</span>
+            {
+              phones.map((p) => (
+                <a href={p.href} class="block text-[0.95rem] font-semibold text-ink hover:text-maroon-700 hover:underline">
+                  {p.value}
+                </a>
+              ))
+            }
+          </span>
+        </div>
+      </li>
+      {
+        methods.map((m) => (
+          <li>
+            <a
+              href={m.href}
+              target={m.external ? '_blank' : undefined}
+              rel={m.external ? 'noopener' : undefined}
+              class="card group flex h-full items-center gap-4 p-5 transition hover:-translate-y-0.5 hover:shadow-xl"
+            >
+              <span class:list={['flex size-14 shrink-0 items-center justify-center rounded-2xl', m.color]}>
+                <Icon name={m.icon} class="size-7" />
+              </span>
+              <span class="min-w-0">
+                <span class="block text-sm text-muted">{t(m.label, lang)}</span>
+                <span class="block text-[0.95rem] font-semibold [overflow-wrap:anywhere] text-ink group-hover:text-maroon-700">{m.value}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="container-page">
+    <div class="grid gap-8 md:grid-cols-2">
+      <OfficeCard lang={lang} heading={ui.addressSangola} office={mainOffice} people={people} />
+      <OfficeCard lang={lang} heading={ui.addressMangalwedha} office={branchOffice} />
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,28 @@
+---
+import type { NewsItem } from '@/data/events';
+import { type Lang, t } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  items: NewsItem[];
+  tone?: 'teal' | 'maroon';
+}
+const { lang, items, tone = 'teal' } = Astro.props;
+---
+
+<ol class="relative space-y-5 border-l-2 border-dashed border-sand-deep pl-6">
+  {
+    items.map((item) => (
+      <li class="relative" lang={lang === 'mr' && !item.mr ? 'en' : undefined}>
+        <span
+          class:list={[
+            'absolute top-2 -left-[1.95rem] size-3.5 rotate-45 ring-4 ring-paper',
+            tone === 'teal' ? 'bg-peacock-600' : 'bg-gold-500',
+          ]}
+          aria-hidden="true"
+        />
+        <p class="text-ink/90">{t(item, lang)}</p>
+      </li>
+    ))
+  }
+</ol>

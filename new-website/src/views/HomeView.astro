@@ -1,0 +1,196 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Mandala from '@/components/Mandala.astro';
+import Icon from '@/components/Icon.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import EventList from '@/components/EventList.astro';
+import OfficeCard from '@/components/OfficeCard.astro';
+import AdmissionBand from '@/components/AdmissionBand.astro';
+import CourseGrid from '@/components/CourseGrid.astro';
+import emblem from '@/assets/emblem.png';
+import poster from '@/assets/admission-poster.png';
+import { instrumentImages } from '@/assets/instruments';
+import { about, milestones, sanstha, motto, mainOffice, branchOffice, people, contact } from '@/data/school';
+import { current, earlier } from '@/data/events';
+import { achievements } from '@/data/subjects';
+import { type Lang, localePath, num, t, tl, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+
+const description =
+  lang === 'mr'
+    ? 'चैतन्य संगीत विद्यालय, सांगोला — स्थापना २६ जानेवारी २००६, अखिल भारतीय गांधर्व महाविद्यालय मंडळ मुंबई संलग्न. गायन, तबला, सतार, हार्मोनियम, कीबोर्ड, पखवाज, गिटार, व्हायोलिन, कथ्थक व बासरी — सांगोला व मंगळवेढा.'
+    : 'Chaitanya Sangeet Vidyalay, Sangola — founded 26 January 2006, affiliated with Akhil Bharatiy Gandharv Mahavidyalaya Mandal, Mumbai. Vocal, tabla, sitar, harmonium, keyboard, pakhawaj, guitar, violin, kathak and flute at Sangola and Mangalwedha.';
+
+// Instruments placed in a circle around the emblem.
+const orbit = achievements.map((a, i) => {
+  const angle = (-90 + i * (360 / achievements.length)) * (Math.PI / 180);
+  return {
+    img: instrumentImages[a.image],
+    alt: t(a.title, lang),
+    left: 50 + 41 * Math.cos(angle),
+    top: 50 + 41 * Math.sin(angle),
+    delay: i * 120,
+  };
+});
+---
+
+<BaseLayout lang={lang} path="/" description={description}>
+  <!-- ───────── Hero ───────── -->
+  <section class="relative isolate overflow-hidden">
+    <div class="bg-paper-texture absolute inset-0 -z-20"></div>
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-ivory/40 to-ivory"></div>
+    <Mandala class="absolute -top-56 -left-56 -z-10 hidden size-[36rem] text-gold-500/15 lg:block" />
+
+    <div class="container-page grid items-center gap-12 pt-10 pb-24 sm:pt-14 lg:grid-cols-[1.1fr_1fr] lg:pb-32">
+      <div class="text-center lg:text-left">
+        <p class="mx-auto inline-block rounded-full border border-peacock-700/25 bg-peacock-100/70 px-4 py-1 text-sm text-peacock-800 lg:mx-0">
+          {sanstha}
+        </p>
+        <h1 class="mt-6 font-display text-5xl leading-[1.15] text-maroon-700 sm:text-6xl xl:text-7xl">
+          चैतन्य संगीत विद्यालय
+        </h1>
+        {lang === 'en' && <p class="mt-3 font-serif text-2xl text-ink sm:text-3xl">Chaitanya Sangeet Vidyalay</p>}
+        <p class="mt-2 text-lg tracking-wide text-muted">{t(ui.places, lang)}</p>
+
+        <p class="mt-6 inline-flex items-center gap-3 font-serif text-xl text-peacock-700 sm:text-2xl">
+          <span class="h-px w-8 bg-gold-500" aria-hidden="true"></span>
+          {motto}
+          <span class="h-px w-8 bg-gold-500" aria-hidden="true"></span>
+        </p>
+
+        <div class="mt-9 flex flex-wrap justify-center gap-3 lg:justify-start">
+          <a href={poster.src} target="_blank" rel="noopener" class="btn btn-primary">
+            {t(ui.admission, lang)}
+            <Icon name="arrowRight" class="size-5" />
+          </a>
+          <a href={localePath(lang, '/subjects/')} class="btn btn-outline">{t(ui.navSubjects, lang)}</a>
+          <a href={`tel:+91${contact.mobile}`} class="btn text-peacock-700 hover:bg-peacock-100">
+            <Icon name="phone" class="size-5" />
+            {num(contact.mobile, lang)}
+          </a>
+        </div>
+      </div>
+
+      <!-- Emblem with instruments around it -->
+      <div class="relative mx-auto aspect-square w-full max-w-[28rem]" aria-hidden="false">
+        <Mandala class="absolute inset-0 size-full text-maroon-700/20 motion-safe:animate-spin-slow" strokeWidth={0.8} />
+        <div class="absolute inset-[18%] rounded-full bg-paper shadow-[0_20px_60px_-25px_rgba(61,16,16,0.55)] ring-1 ring-gold-300"></div>
+        <Image
+          src={emblem}
+          alt={lang === 'mr' ? 'चैतन्य संगीत विद्यालय बोधचिन्ह' : 'Chaitanya Sangeet Vidyalay emblem'}
+          width={360}
+          height={360}
+          loading="eager"
+          class="absolute inset-[20%] size-[60%]"
+        />
+        {
+          orbit.map((o) => (
+            <div
+              class="absolute size-[21%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full bg-white p-1.5 shadow-lg ring-2 ring-gold-300 transition-transform hover:scale-110"
+              style={`left:${o.left.toFixed(2)}%;top:${o.top.toFixed(2)}%`}
+              title={o.alt}
+            >
+              <Image src={o.img} alt={o.alt} width={160} height={160} class="size-full rounded-full object-contain" />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Milestones ───────── -->
+  <section class="relative z-10 -mt-14 lg:-mt-20" aria-label={t(ui.milestonesHeading, lang)}>
+    <div class="container-page">
+      <ul class="card grid grid-cols-2 gap-px overflow-hidden bg-sand-deep lg:grid-cols-4">
+        {
+          milestones.map((m) => (
+            <li class="bg-paper p-5 text-center sm:p-7">
+              <p class="font-serif text-2xl text-maroon-700 sm:text-3xl">{t(m.value, lang)}</p>
+              <p class="mt-1 text-sm leading-snug text-muted">{t(m.label, lang)}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ───────── About ───────── -->
+  <section class="container-page py-20" aria-labelledby="about-heading">
+    <SectionHeading id="about-heading" title={t(ui.aboutHeading, lang)} />
+    <div class="grid gap-8 lg:grid-cols-[1.35fr_1fr]">
+      <div class="card card-frieze p-6 sm:p-10">
+        <div class="space-y-4 text-lg">
+          {tl(about.intro, lang).map((p) => <p>{p}</p>)}
+        </div>
+        <ul class="list-ornament mt-8 space-y-3 border-t border-sand-deep pt-8">
+          {tl(about.history, lang).map((line) => <li>{line}</li>)}
+        </ul>
+      </div>
+
+      <aside class="relative isolate overflow-hidden rounded-[1.25rem] bg-maroon-800 p-6 text-sand shadow-xl sm:p-10">
+        <Mandala class="absolute -right-24 -bottom-24 -z-10 size-72 text-gold-300/10" />
+        <h3 class="font-serif text-2xl text-gold-300">{t(about.gurusHeading, lang)}</h3>
+        <ul class="mt-6 space-y-4">
+          {
+            tl(about.gurus, lang).map((g) => (
+              <li class="flex gap-3">
+                <span class="mt-2.5 size-2 shrink-0 rotate-45 bg-gold-500" aria-hidden="true" />
+                <span class="text-lg text-gold-100">{g}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ───────── Courses ───────── -->
+  <section class="relative isolate overflow-hidden border-y border-sand-deep bg-sand/50 py-20" aria-labelledby="courses-heading">
+    <div class="bg-paper-texture absolute inset-0 -z-10 opacity-60"></div>
+    <div class="container-page">
+      <SectionHeading id="courses-heading" title={t(ui.coursesHeading, lang)} />
+      <CourseGrid lang={lang} />
+      <div class="mt-10 text-center">
+        <a href={localePath(lang, '/subjects/')} class="btn btn-primary">
+          {t(ui.allSubjects, lang)}
+          <Icon name="arrowRight" class="size-5" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Events ───────── -->
+  <section class="container-page py-20" aria-label={`${t(ui.currentEvents, lang)} · ${t(ui.earlierEvents, lang)}`}>
+    <div class="grid gap-8 lg:grid-cols-2">
+      <div class="card card-frieze p-6 sm:p-8">
+        <h2 class="mb-6 flex items-center gap-3 font-serif text-2xl text-maroon-700">
+          <span class="relative flex size-3">
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-peacock-600 opacity-60"></span>
+            <span class="relative inline-flex size-3 rounded-full bg-peacock-600"></span>
+          </span>
+          {t(ui.currentEvents, lang)}
+        </h2>
+        <EventList lang={lang} items={current} tone="teal" />
+      </div>
+      <div class="card card-frieze p-6 sm:p-8">
+        <h2 class="mb-6 font-serif text-2xl text-maroon-700">{t(ui.earlierEvents, lang)}</h2>
+        <EventList lang={lang} items={earlier} tone="maroon" />
+      </div>
+    </div>
+  </section>
+
+  <AdmissionBand lang={lang} />
+
+  <!-- ───────── Offices ───────── -->
+  <section class="container-page pt-20" aria-label={`${t(ui.mainOffice, lang)} · ${t(ui.branch, lang)}`}>
+    <div class="grid gap-8 md:grid-cols-2">
+      <OfficeCard lang={lang} heading={ui.mainOffice} office={mainOffice} people={people} />
+      <OfficeCard lang={lang} heading={ui.branch} office={branchOffice} />
+    </div>
+  </section>
+</BaseLayout>

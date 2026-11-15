@@ -1,0 +1,25 @@
+---
+import { courses } from '@/data/subjects';
+import { type Lang, num, t } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const split = (s: string) => s.split(/\s*\/\s*/).filter(Boolean);
+---
+
+<ul class="grid grid-cols-1 gap-3 min-[340px]:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
+  {
+    courses.map((c, i) => {
+      const [main, ...rest] = split(t(c, lang));
+      return (
+        <li class="card flex flex-col p-5 transition hover:-translate-y-1 hover:shadow-xl">
+          <span class="font-serif text-sm text-gold-600">{num(String(i + 1).padStart(2, '0'), lang)}</span>
+          <span class="mt-1 font-serif text-xl text-maroon-700">{main}</span>
+          {rest.length > 0 && <span class="mt-1 text-sm leading-snug text-muted">{rest.join(' · ')}</span>}
+        </li>
+      );
+    })
+  }
+</ul>

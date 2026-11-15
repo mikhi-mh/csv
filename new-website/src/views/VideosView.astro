@@ -1,0 +1,43 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageBanner from '@/components/PageBanner.astro';
+import YouTubeLite from '@/components/YouTubeLite.astro';
+import Icon from '@/components/Icon.astro';
+import { videos } from '@/data/videos';
+import { contact } from '@/data/school';
+import { type Lang, t, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const title = t(ui.videosHeading, lang);
+const description =
+  lang === 'mr'
+    ? 'चैतन्य संगीत विद्यालयाचे विद्यार्थी व शिक्षकांचे तबला, गायन, हार्मोनियम सादरीकरणाचे व्हिडीओ.'
+    : 'Videos of Chaitanya Sangeet Vidyalay students and teachers — tabla, vocal and harmonium performances.';
+---
+
+<BaseLayout lang={lang} path="/videos/" title={title} description={description}>
+  <PageBanner title={title} />
+
+  <section class="container-page py-16">
+    <ul class="grid gap-8 md:grid-cols-2">
+      {
+        videos.map((v) => (
+          <li class="card overflow-hidden p-3">
+            <YouTubeLite id={v.id} title={t(v.title, lang)} playLabel={t(ui.playVideo, lang)} />
+            <p class="px-3 pt-4 pb-2 font-serif text-lg leading-snug text-maroon-700">{t(v.title, lang)}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-14 text-center">
+      <a href={contact.youtube.url} target="_blank" rel="noopener" class="btn btn-primary">
+        <Icon name="youtube" class="size-5" />
+        {t(ui.watchOnYouTube, lang)}
+      </a>
+    </div>
+  </section>
+</BaseLayout>

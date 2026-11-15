@@ -1,0 +1,45 @@
+---
+/**
+ * Background music. It never starts by itself — the visitor presses the ♪ button.
+ * `transition:persist` keeps the same <audio> element alive while moving
+ * between pages, so the music continues without restarting.
+ */
+---
+
+<audio id="bg-audio" src="/audio/dtph.mp3" preload="none" loop transition:persist></audio>
+
+<script>
+  function syncButtons(audio: HTMLAudioElement) {
+    document.querySelectorAll<HTMLButtonElement>('[data-music-toggle]').forEach((btn) => {
+      const playing = !audio.paused;
+      const label = (playing ? btn.dataset.labelPause : btn.dataset.labelPlay) ?? '';
+      btn.setAttribute('aria-pressed', String(playing));
+      btn.setAttribute('aria-label', label);
+      btn.title = label;
+    });
+  }
+
+  function setup() {
+    const audio = document.getElementById('bg-audio') as HTMLAudioElement | null;
+    if (!audio) return;
+
+    // Attach audio listeners only once (the element survives page changes).
+    if (!audio.dataset.ready) {
+      audio.dataset.ready = '1';
+      audio.volume = 0.4;
+      audio.addEventListener('play', () => syncButtons(audio));
+      audio.addEventListener('pause', () => syncButtons(audio));
+    }
+
+    // Buttons are new on every page, so wire them up each time.
+    document.querySelectorAll<HTMLButtonElement>('[data-music-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (audio.paused) audio.play().catch(() => {});
+        else audio.pause();
+      });
+    });
+    syncButtons(audio);
+  }
+
+  document.addEventListener('astro:page-load', setup);
+</script>

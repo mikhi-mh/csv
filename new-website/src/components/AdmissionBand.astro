@@ -1,0 +1,50 @@
+---
+/** Big admission call-to-action: poster preview + application form. */
+import { Image } from 'astro:assets';
+import poster from '@/assets/admission-poster.png';
+import Icon from '@/components/Icon.astro';
+import Mandala from '@/components/Mandala.astro';
+import { current } from '@/data/events';
+import { downloads, contact } from '@/data/school';
+import { type Lang, t, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const highlight = current.find((e) => e.highlight);
+---
+
+<section class="relative isolate overflow-hidden bg-peacock-800 text-white">
+  <Mandala class="absolute top-1/2 -left-48 -z-10 size-[40rem] -translate-y-1/2 text-white/[0.06] motion-safe:animate-spin-slow" />
+  <div class="container-page grid items-center gap-10 py-16 md:grid-cols-[1fr_auto] lg:gap-16">
+    <div>
+      <p class="font-serif text-gold-300">{t(ui.admission, lang)}</p>
+      {highlight && <h2 class="mt-2 font-serif text-3xl leading-snug sm:text-4xl">{t(highlight, lang)}</h2>}
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={poster.src} target="_blank" rel="noopener" class="btn btn-gold">
+          <Icon name="file" class="size-5" />
+          {t(ui.brochure, lang)}
+        </a>
+        <a href={downloads.applicationForm} target="_blank" rel="noopener" class="btn border border-white/40 text-white hover:bg-white/10">
+          <Icon name="download" class="size-5" />
+          {t(ui.applicationForm, lang)}
+        </a>
+        <a href={`https://wa.me/${contact.whatsapp}`} target="_blank" rel="noopener" class="btn border border-white/40 text-white hover:bg-white/10">
+          <Icon name="whatsapp" class="size-5" />
+          {t(ui.whatsapp, lang)}
+        </a>
+      </div>
+    </div>
+
+    <a
+      href={poster.src}
+      target="_blank"
+      rel="noopener"
+      class="group mx-auto block w-56 rotate-2 rounded-xl bg-white p-2 shadow-2xl transition-transform hover:rotate-0 sm:w-64"
+      aria-label={t(ui.brochure, lang)}
+    >
+      <Image src={poster} alt={t(ui.brochure, lang)} width={512} class="rounded-lg" />
+    </a>
+  </div>
+</section>

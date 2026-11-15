@@ -1,0 +1,128 @@
+---
+import '@fontsource/mukta/400.css';
+import '@fontsource/mukta/500.css';
+import '@fontsource/mukta/700.css';
+import '@fontsource/tiro-devanagari-marathi/400.css';
+import '@fontsource/yatra-one/400.css';
+import '@/styles/global.css';
+
+import { ClientRouter } from 'astro:transitions';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import MusicPlayer from '@/components/MusicPlayer.astro';
+import { invocation, contact, mainOffice, foundingDate } from '@/data/school';
+import { type Lang, localePath, t, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  /** Path without language prefix, e.g. '/' or '/videos/' */
+  path: string;
+  /** Page name shown in the browser tab (leave empty on the home page) */
+  title?: string;
+  description: string;
+}
+
+const { lang, path, title, description } = Astro.props;
+const site = Astro.site ?? new URL('https://www.chaitanyasangeetvidyalay.com');
+
+const schoolName = t(ui.siteName, lang);
+const fullTitle = title
+  ? `${title} · ${schoolName}`
+  : lang === 'mr'
+    ? 'चैतन्य संगीत विद्यालय, सांगोला · मंगळवेढा'
+    : 'Chaitanya Sangeet Vidyalay · चैतन्य संगीत विद्यालय, Sangola';
+
+const canonical = new URL(localePath(lang, path), site).href;
+const altEn = new URL(localePath('en', path), site).href;
+const altMr = new URL(localePath('mr', path), site).href;
+const ogImage = new URL('/icons/web-app-manifest-512x512.png', site).href;
+
+const isHome = path === '/';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'EducationalOrganization',
+  name: 'Chaitanya Sangeet Vidyalay',
+  alternateName: 'चैतन्य संगीत विद्यालय',
+  url: site.href,
+  logo: ogImage,
+  foundingDate,
+  email: contact.email,
+  telephone: `+91-${contact.mobile}`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'near Mahimkar Apartment, Old Alegaon-MedShingi Road',
+    addressLocality: 'Sangola',
+    addressRegion: 'Maharashtra',
+    postalCode: '413307',
+    addressCountry: 'IN',
+  },
+  location: [
+    { '@type': 'Place', name: 'Sangola', hasMap: mainOffice.mapUrl },
+    {
+      '@type': 'Place',
+      name: 'Mangalwedha',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: '1st floor, Swami Samarth Temple',
+        addressLocality: 'Mangalwedha',
+        addressRegion: 'Maharashtra',
+        addressCountry: 'IN',
+      },
+    },
+  ],
+  sameAs: [contact.instagram.url, contact.youtube.url],
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={altEn} />
+    <link rel="alternate" hreflang="mr" href={altMr} />
+    <link rel="alternate" hreflang="x-default" href={altEn} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Chaitanya Sangeet Vidyalay" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'mr' ? 'mr_IN' : 'en_IN'} />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/icons/favicon-96x96.png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#6b1d1d" />
+
+    {isHome && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    <ClientRouter />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-full focus:bg-maroon-700 focus:px-4 focus:py-2 focus:text-white"
+    >
+      {lang === 'mr' ? 'मुख्य मजकुराकडे जा' : 'Skip to content'}
+    </a>
+
+    <div class="bg-maroon-950 py-1.5 text-center font-serif text-sm tracking-wide text-gold-300">
+      {invocation}
+    </div>
+
+    <Header lang={lang} path={path} />
+
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+
+    <Footer lang={lang} path={path} />
+    <MusicPlayer />
+  </body>
+</html>

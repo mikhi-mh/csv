@@ -1,0 +1,22 @@
+---
+/** Title banner used at the top of inner pages. */
+import Mandala from '@/components/Mandala.astro';
+import Ornament from '@/components/Ornament.astro';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+}
+const { title, subtitle } = Astro.props;
+---
+
+<section class="relative isolate overflow-hidden border-b border-sand-deep bg-sand/60">
+  <div class="bg-paper-texture absolute inset-0 -z-20 opacity-70"></div>
+  <Mandala class="absolute -top-40 -left-32 -z-10 size-[26rem] text-maroon-700/[0.07] motion-safe:animate-spin-slow" />
+  <Mandala class="absolute -right-28 -bottom-44 -z-10 size-[24rem] text-peacock-700/[0.08]" />
+  <div class="container-page py-12 text-center sm:py-16">
+    <h1 class="font-serif text-4xl text-maroon-700 sm:text-5xl">{title}</h1>
+    {subtitle && <p class="mx-auto mt-3 max-w-2xl text-lg text-muted">{subtitle}</p>}
+    <Ornament class="mt-5 text-gold-500" />
+  </div>
+</section>

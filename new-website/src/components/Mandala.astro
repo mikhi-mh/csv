@@ -1,0 +1,52 @@
+---
+/**
+ * Decorative mandala drawn with SVG (no image file needed).
+ * Colour comes from the CSS `color` of the parent (currentColor).
+ */
+interface Props {
+  class?: string;
+  strokeWidth?: number;
+}
+const { class: className = '', strokeWidth = 1 } = Astro.props;
+
+const C = 200; // centre
+
+// Petal rings: [count, inner radius, outer radius, width]
+const rings: [number, number, number, number][] = [
+  [8, 22, 62, 16],
+  [16, 58, 104, 14],
+  [24, 100, 146, 12],
+  [32, 142, 186, 10],
+];
+
+function petal(r1: number, r2: number, w: number) {
+  const mid = (r1 + r2) / 2;
+  return `M ${C} ${C - r1} Q ${C + w} ${C - mid} ${C} ${C - r2} Q ${C - w} ${C - mid} ${C} ${C - r1} Z`;
+}
+
+const dots = Array.from({ length: 48 }, (_, i) => (i * 360) / 48);
+---
+
+<svg
+  class={className}
+  viewBox="0 0 400 400"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={strokeWidth}
+  aria-hidden="true"
+  focusable="false"
+>
+  <circle cx={C} cy={C} r="14" />
+  <circle cx={C} cy={C} r="6" fill="currentColor" stroke="none" />
+  {
+    rings.map(([count, r1, r2, w]) => (
+      <g>
+        {Array.from({ length: count }, (_, i) => (
+          <path d={petal(r1, r2, w)} transform={`rotate(${(i * 360) / count + (count % 16 === 0 ? 180 / count : 0)} ${C} ${C})`} />
+        ))}
+        <circle cx={C} cy={C} r={r2 + 2} stroke-dasharray="2 5" />
+      </g>
+    ))
+  }
+  {dots.map((deg) => <circle cx={C} cy={C - 196} r="2" fill="currentColor" stroke="none" transform={`rotate(${deg} ${C} ${C})`} />)}
+</svg>

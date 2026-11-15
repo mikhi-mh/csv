@@ -1,0 +1,19 @@
+---
+/** Small decorative divider: line · diamond · lotus · diamond · line */
+interface Props {
+  class?: string;
+}
+const { class: className = 'text-gold-500' } = Astro.props;
+---
+
+<div class:list={['flex items-center justify-center gap-3', className]} aria-hidden="true">
+  <span class="h-px w-12 bg-current opacity-60 sm:w-20"></span>
+  <span class="size-1.5 rotate-45 bg-current"></span>
+  <svg viewBox="0 0 48 24" class="h-5 w-10" fill="currentColor">
+    <path d="M24 2c3 4 4.5 8 4.5 11.5S27 20 24 22c-3-2-4.5-5-4.5-8.5S21 6 24 2Z" />
+    <path d="M24 22c-4-.5-8-2.5-10.5-6 3.5-1 7.5-.2 10.5 2.5V22Zm0 0c4-.5 8-2.5 10.5-6-3.5-1-7.5-.2-10.5 2.5V22Z" opacity=".75" />
+    <path d="M24 22c-6 .3-12-1.2-16-4.5 4.5-2.4 10-2 16 1.5V22Zm0 0c6 .3 12-1.2 16-4.5-4.5-2.4-10-2-16 1.5V22Z" opacity=".45" />
+  </svg>
+  <span class="size-1.5 rotate-45 bg-current"></span>
+  <span class="h-px w-12 bg-current opacity-60 sm:w-20"></span>
+</div>

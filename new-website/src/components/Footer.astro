@@ -1,0 +1,108 @@
+---
+import { Image } from 'astro:assets';
+import emblem from '@/assets/emblem.png';
+import Icon from '@/components/Icon.astro';
+import Mandala from '@/components/Mandala.astro';
+import { contact, sanstha, motto } from '@/data/school';
+import { type Lang, localePath, num, t, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  path: string;
+}
+const { lang } = Astro.props;
+const year = new Date().getFullYear();
+
+const links = [
+  { href: '/', label: ui.navHome },
+  { href: '/subjects/', label: ui.navSubjects },
+  { href: '/videos/', label: ui.navVideos },
+  { href: '/gallery/', label: ui.navGallery },
+  { href: '/contact/', label: ui.navContact },
+];
+---
+
+<footer class="relative isolate mt-20 overflow-hidden bg-maroon-950 text-sand">
+  <Mandala class="pointer-events-none absolute -right-40 -bottom-48 -z-10 size-[34rem] text-gold-500/10" />
+  <div class="h-1.5 bg-gradient-to-r from-gold-500 via-maroon-600 to-peacock-600"></div>
+
+  <div class="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr]">
+    <div>
+      <div class="flex items-center gap-3">
+        <Image src={emblem} alt="" width={64} height={64} class="size-16 rounded-full bg-paper p-0.5" />
+        <div>
+          <p class="font-display text-2xl text-gold-300">चैतन्य संगीत विद्यालय</p>
+          <p class="text-sm text-sand/80">Chaitanya Sangeet Vidyalay · {t(ui.places, lang)}</p>
+        </div>
+      </div>
+      <p class="mt-5 font-serif text-lg text-gold-100">{motto}</p>
+      <p class="mt-2 text-sm text-sand/70">{sanstha}</p>
+    </div>
+
+    <nav aria-label={lang === 'mr' ? 'तळटीप मेनू' : 'Footer'}>
+      <ul class="space-y-2">
+        {
+          links.map((l) => (
+            <li>
+              <a href={localePath(lang, l.href)} class="text-sand/90 transition-colors hover:text-gold-300">
+                {t(l.label, lang)}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="space-y-3">
+      <a href={`tel:+91${contact.mobile}`} class="flex items-center gap-3 hover:text-gold-300">
+        <Icon name="phone" class="size-5 text-gold-500" />
+        <span>+91 {num(contact.mobile, lang)}</span>
+      </a>
+      <a href={`mailto:${contact.email}`} class="flex items-center gap-3 break-all hover:text-gold-300">
+        <Icon name="mail" class="size-5 shrink-0 text-gold-500" />
+        <span>{contact.email}</span>
+      </a>
+      <div class="flex gap-3 pt-2">
+        <a
+          href={`https://wa.me/${contact.whatsapp}`}
+          target="_blank"
+          rel="noopener"
+          class="flex size-11 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-[#25d366] hover:text-white"
+          aria-label={t(ui.whatsapp, lang)}
+        >
+          <Icon name="whatsapp" class="size-5" />
+        </a>
+        <a
+          href={contact.instagram.url}
+          target="_blank"
+          rel="noopener"
+          class="flex size-11 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-[#d62976] hover:text-white"
+          aria-label={t(ui.instagram, lang)}
+        >
+          <Icon name="instagram" class="size-5" />
+        </a>
+        <a
+          href={contact.youtube.url}
+          target="_blank"
+          rel="noopener"
+          class="flex size-11 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-[#ff0000] hover:text-white"
+          aria-label={t(ui.youtube, lang)}
+        >
+          <Icon name="youtube" class="size-5" />
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="container-page flex flex-col gap-2 py-5 text-sm text-sand/70 sm:flex-row sm:items-center sm:justify-between">
+      <p>© {num(year, lang)} {t(ui.siteName, lang)}</p>
+      <p>
+        {t(ui.developedBy, lang)} :
+        <a href="https://mikhi-mh.github.io/" target="_blank" rel="noopener" class="text-gold-300 underline underline-offset-2 hover:text-gold-100">
+          CSVS Student : Mikhilesh
+        </a>
+      </p>
+    </div>
+  </div>
+</footer>

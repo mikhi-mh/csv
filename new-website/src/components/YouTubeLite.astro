@@ -1,0 +1,54 @@
+---
+/**
+ * Lightweight YouTube embed: shows the thumbnail first and loads the real
+ * player only when clicked — pages stay fast even with many videos.
+ */
+import Icon from '@/components/Icon.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  playLabel: string;
+}
+const { id, title, playLabel } = Astro.props;
+---
+
+<div class="relative aspect-video overflow-hidden rounded-xl bg-maroon-950" data-yt={id} data-yt-title={title}>
+  <button type="button" class="group absolute inset-0 size-full cursor-pointer" aria-label={`${playLabel}: ${title}`}>
+    <img
+      src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      class="size-full object-cover opacity-90 transition duration-300 group-hover:scale-[1.03] group-hover:opacity-100"
+    />
+    <span class="absolute inset-0 bg-gradient-to-t from-maroon-950/60 to-transparent"></span>
+    <span
+      class="absolute top-1/2 left-1/2 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-maroon-700/90 text-gold-100 shadow-lg ring-4 ring-white/30 transition group-hover:scale-110 group-hover:bg-maroon-600"
+    >
+      <Icon name="play" class="ml-1 size-7" />
+    </span>
+  </button>
+</div>
+
+<script>
+  function setup() {
+    document.querySelectorAll<HTMLElement>('[data-yt]').forEach((box) => {
+      const btn = box.querySelector('button');
+      if (!btn || btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', () => {
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube-nocookie.com/embed/${box.dataset.yt}?autoplay=1&rel=0`;
+        iframe.title = box.dataset.ytTitle ?? 'YouTube video';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.allowFullscreen = true;
+        iframe.className = 'absolute inset-0 size-full';
+        box.replaceChildren(iframe);
+        // Pause background music when a video starts
+        (document.getElementById('bg-audio') as HTMLAudioElement | null)?.pause();
+      });
+    });
+  }
+  document.addEventListener('astro:page-load', setup);
+</script>

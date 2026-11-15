@@ -1,0 +1,78 @@
+---
+/**
+ * Small "N visitors" line for the footer.
+ *
+ * No backend: the count lives in Abacus (https://abacus.jasoncameron.dev), a free
+ * counter API. Each browser is counted once ("hit"); later visits only read the
+ * number ("get"). If the service is slow or down, the line simply stays hidden.
+ */
+import Icon from '@/components/Icon.astro';
+import { type Lang, t, ui } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const [before, after = ''] = t(ui.visitors, lang).split('{n}');
+---
+
+<p data-visitor-counter data-lang={lang} hidden class="flex items-center gap-1.5 text-sand/60">
+  <Icon name="music" class="size-4 text-gold-500/70" />
+  <span>{before}<span data-count class="font-medium text-gold-300/90 tabular-nums"></span>{after}</span>
+</p>
+
+<script>
+  import { num, type Lang } from '@/i18n';
+
+  const API = 'https://abacus.jasoncameron.dev';
+  const NAMESPACE = 'chaitanyasangeetvidyalay.com';
+  const KEY = 'visitors';
+  const COUNTED = 'csv-visitor-counted';
+
+  // Shared across page navigations, so one page view makes at most one request.
+  let request: Promise<number | null> | null = null;
+
+  function readFlag(): boolean {
+    try {
+      return localStorage.getItem(COUNTED) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  function loadCount(): Promise<number | null> {
+    if (request) return request;
+    // Only the live site adds visits; `npm run dev` / preview just read the number.
+    const live = location.hostname.endsWith('chaitanyasangeetvidyalay.com');
+    const counted = !live || readFlag();
+    request = fetch(`${API}/${counted ? 'get' : 'hit'}/${NAMESPACE}/${KEY}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const value = typeof data?.value === 'number' && data.value > 0 ? data.value : null;
+        if (value !== null && !counted) {
+          try {
+            localStorage.setItem(COUNTED, '1');
+          } catch {
+            /* private mode: fine, the in-memory request still prevents repeats */
+          }
+        }
+        return value;
+      })
+      .catch(() => null);
+    return request;
+  }
+
+  async function show() {
+    const el = document.querySelector<HTMLElement>('[data-visitor-counter]');
+    if (!el) return;
+    // In `npm run dev`, show a sample number until the live counter exists, so the line can be previewed.
+    const value = (await loadCount()) ?? (import.meta.env.DEV ? 1234 : null);
+    const slot = el.querySelector('[data-count]');
+    if (value === null || !slot) return;
+    const lang = (el.dataset.lang as Lang) ?? 'en';
+    slot.textContent = num(value.toLocaleString('en-IN'), lang);
+    el.hidden = false;
+  }
+
+  document.addEventListener('astro:page-load', show);
+</script>

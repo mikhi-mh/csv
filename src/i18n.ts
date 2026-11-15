@@ -95,5 +95,8 @@ export const ui = {
   instagram: { en: 'Instagram', mr: 'इंस्टाग्राम' },
   youtube: { en: 'YouTube Channel', mr: 'यूट्यूब चॅनल / वाहिनी' },
 
+  /** Footer visitor line. {n} is replaced by the number. */
+  visitors: { en: '{n} music lovers have visited this site', mr: '{n} संगीतप्रेमींनी या संकेतस्थळाला भेट दिली' },
+
   developedBy: { en: 'Developed & Maintained by', mr: 'Developed & Maintained by' },
 } satisfies Record<string, T>;

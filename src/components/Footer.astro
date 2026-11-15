@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import emblem from '@/assets/emblem.png';
 import Icon from '@/components/Icon.astro';
 import Mandala from '@/components/Mandala.astro';
+import VisitorCounter from '@/components/VisitorCounter.astro';
 import { contact, sanstha, motto } from '@/data/school';
 import { type Lang, localePath, num, t, ui } from '@/i18n';
 
@@ -104,6 +105,7 @@ const links = [
   <div class="border-t border-white/10">
     <div class="container-page flex flex-col gap-2 py-5 text-sm text-sand/70 sm:flex-row sm:items-center sm:justify-between">
       <p>© {num(year, lang)} {t(ui.siteName, lang)}</p>
+      <VisitorCounter lang={lang} />
       <p>
         {t(ui.developedBy, lang)} :
         <a href="https://mikhi-mh.github.io/" target="_blank" rel="noopener" class="text-gold-300 underline underline-offset-2 hover:text-gold-100">

@@ -86,7 +86,7 @@ export const ui = {
 
   contactHeading: { en: 'Contact Us : Chaitanya Sangeet Vidyalay', mr: 'संपर्क : चैतन्य संगीत विद्यालय' },
   addressSangola: { en: 'Sangola Address', mr: 'सांगोला पत्ता' },
-  addressMangalwedha: { en: 'MangalWedha Address', mr: 'मंगळवेढा पत्ता' },
+  addressMangalwedha: { en: 'Mangalwedha Address', mr: 'मंगळवेढा पत्ता' },
   mobile: { en: 'Mobile Number', mr: 'भ्रमणध्वनी / मोबाइल क्रमांक' },
   website: { en: 'Website', mr: 'विद्यालयाचे संकेतस्थळ' },
   email: { en: 'Email', mr: 'ई-मेल' },

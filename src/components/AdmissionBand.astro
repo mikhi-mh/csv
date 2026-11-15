@@ -5,7 +5,7 @@ import poster from '@/assets/admission-poster.png';
 import Icon from '@/components/Icon.astro';
 import Mandala from '@/components/Mandala.astro';
 import { current } from '@/data/events';
-import { downloads, contact } from '@/data/school';
+import { downloads, contact, admissionHighlights } from '@/data/school';
 import { type Lang, t, ui } from '@/i18n';
 
 interface Props {
@@ -21,6 +21,16 @@ const highlight = current.find((e) => e.highlight);
     <div>
       <p class="font-serif text-gold-300">{t(ui.admission, lang)}</p>
       {highlight && <h2 class="mt-2 font-serif text-3xl leading-snug sm:text-4xl">{t(highlight, lang)}</h2>}
+      <ul class="mt-6 flex flex-wrap gap-2.5">
+        {
+          admissionHighlights.map((h) => (
+            <li class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-gold-100 ring-1 ring-white/20">
+              <span class="size-1.5 rotate-45 bg-gold-300" aria-hidden="true" />
+              {t(h, lang)}
+            </li>
+          ))
+        }
+      </ul>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href={poster.src} target="_blank" rel="noopener" class="btn btn-gold">
           <Icon name="file" class="size-5" />

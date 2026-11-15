@@ -16,8 +16,9 @@ const description =
     ? 'चैतन्य संगीत विद्यालय संपर्क — सांगोला व मंगळवेढा पत्ता, मोबाइल +91-9822970551, ई-मेल csvidyalay@gmail.com, व्हॉट्सॲप, इंस्टाग्राम, यूट्यूब.'
     : 'Contact Chaitanya Sangeet Vidyalay — Sangola and Mangalwedha addresses, mobile +91-9822970551, email csvidyalay@gmail.com, WhatsApp, Instagram, YouTube.';
 
+const phones = contact.mobiles.map((m) => ({ value: `+91-${num(m, lang)}`, href: `tel:+91${m}` }));
+
 const methods: { icon: IconName; label: T; value: string; href: string; color: string; external?: boolean }[] = [
-  { icon: 'phone', label: ui.mobile, value: `+91-${num(contact.mobile, lang)}`, href: `tel:+91${contact.mobile}`, color: 'bg-maroon-100 text-maroon-700' },
   {
     icon: 'whatsapp',
     label: ui.whatsapp,
@@ -58,6 +59,23 @@ const methods: { icon: IconName; label: T; value: string; href: string; color: s
 
   <section class="container-page py-16">
     <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <li>
+        <div class="card flex h-full items-center gap-4 p-5">
+          <span class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-maroon-100 text-maroon-700">
+            <Icon name="phone" class="size-7" />
+          </span>
+          <span class="min-w-0">
+            <span class="block text-sm text-muted">{t(ui.mobile, lang)}</span>
+            {
+              phones.map((p) => (
+                <a href={p.href} class="block text-[0.95rem] font-semibold text-ink hover:text-maroon-700 hover:underline">
+                  {p.value}
+                </a>
+              ))
+            }
+          </span>
+        </div>
+      </li>
       {
         methods.map((m) => (
           <li>

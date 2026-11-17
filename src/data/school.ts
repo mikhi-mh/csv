@@ -124,6 +124,7 @@ export const about = {
       'Mr. Vinayak Phatak Sir, Pune',
       'Mr. Manmohan Kumbhare Sir, Sangli',
       'Mr. Mohasin Mirajkar Sir, Miraj',
+      'Mr. Purbayan Chatterjee Sir, Mumbai / Kolkata',
     ],
     mr: [
       'श्री. शशिकांत बाळकृष्ण पाटील (वडील)',
@@ -132,6 +133,7 @@ export const about = {
       'श्री. विनायक फाटक सर, पुणे',
       'श्री. मनमोहन कुंभारे सर, सांगली',
       'श्री. मोहसीन मिरजकर सर, मिरज',
+      'श्री. पुरबयान चटर्जी सर, मुंबई	/ कलकत्ता',
     ],
   } satisfies TList,
 };

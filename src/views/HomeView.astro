@@ -140,7 +140,18 @@ const orbit = achievements.map((a, i) => {
             tl(about.gurus, lang).map((g) => (
               <li class="flex gap-3">
                 <span class="mt-2.5 size-2 shrink-0 rotate-45 bg-gold-500" aria-hidden="true" />
-                <span class="text-lg text-gold-100">{g}</span>
+                <span class="text-lg text-gold-100">
+                  {g.split(/(\[[^\]]+\]\([^)]+\))/).map((part) => {
+                    const m = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+                    return m ? (
+                      <a href={m[2]} target="_blank" rel="noopener" class="underline decoration-gold-500 underline-offset-4 hover:text-gold-300">
+                        {m[1]}
+                      </a>
+                    ) : (
+                      part
+                    );
+                  })}
+                </span>
               </li>
             ))
           }
